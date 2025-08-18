@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Class To Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+</head>
+<body>
+    <header class="fixed-header">
+        <div class="header-content">
+            <a href="home.html" class="back-arrow">←</a>
+            <h1 class="logo" id="menu-title">Menu</h1>
+            <a href="cart.html" class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span id="cart-counter" class="cart-badge">0</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="scrollable-content">
+        <section class="product-display">
+            <div class="food-grid" id="product-grid">
+                <!-- Products will be injected here by JS -->
+                <div class="loader"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bottom-nav">
+        <a href="home.html" class="nav-item">Home</a>
+        <a href="cart.html" class="nav-item active">Menu</a> <!-- This should be menu/active if on menu -->
+        <a href="orders.html" class="nav-item">Orders</a>
+        <a href="#" id="profile-logout" class="nav-item">Profile</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.6.2/dist/sql-wasm.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkDB = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkDB);
+
+                    protectRoute();
+                    loadMenuPage();
+                    updateCartCounter();
+
+                    document.getElementById('profile-logout').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        logoutUser();
+                    });
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Orders - Class To Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+</head>
+<body>
+    <header class="fixed-header">
+        <div class="header-content">
+            <a href="dashboard.html" class="back-arrow">←</a>
+            <h1 class="logo">Live Orders</h1>
+            <a href="#" id="logout-btn" class="nav-item">Logout</a>
+        </div>
+    </header>
+
+    <main class="scrollable-content" id="shop-orders-page">
+        <div id="live-orders-container">
+            <!-- Live orders will be injected here by JS -->
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.6.2/dist/sql-wasm.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function updateOrderStatus(orderId, newStatus) {
+            if (!window.db) {
+                alert("Database not ready.");
+                return;
+            }
+            try {
+                const stmt = db.prepare("UPDATE orders SET status = ? WHERE id = ?");
+                stmt.run([newStatus, orderId]);
+                stmt.free();
+
+                loadShopOrders(); // Refresh the list
+            } catch (error) {
+                console.error("Failed to update order status:", error);
+                alert("Error updating order status.");
+            }
+        }
+
+        function loadShopOrders() {
+            const container = document.getElementById('live-orders-container');
+            const owner = getCurrentUser();
+            if (!owner || owner.role !== 'owner') return;
+
+            // Assuming owner of shop 1 for demo
+            const shopId = 1;
+
+            try {
+                const ordersStmt = db.prepare("SELECT * FROM orders WHERE shop_id = ? AND status != 'Completed' ORDER BY created_at ASC");
+                ordersStmt.bind([shopId]);
+
+                let ordersHtml = '';
+                let hasOrders = false;
+                while (ordersStmt.step()) {
+                    hasOrders = true;
+                    const order = ordersStmt.getAsObject();
+
+                    let itemsHtml = '';
+                    const itemsStmt = db.prepare("SELECT p.name, oi.quantity FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+                    itemsStmt.bind([order.id]);
+                    while(itemsStmt.step()){
+                        const item = itemsStmt.getAsObject();
+                        itemsHtml += `<li>${item.quantity} x ${item.name}</li>`;
+                    }
+                    itemsStmt.free();
+
+                    const statuses = ['Pending', 'Preparing', 'Ready', 'Completed'];
+                    let statusOptions = '';
+                    statuses.forEach(status => {
+                        statusOptions += `<option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>`;
+                    });
+
+                    ordersHtml += `
+                        <div class="shop-order-card status-${order.status.toLowerCase()}">
+                            <div class="order-header">
+                                <p class="order-id">Token: <strong>${order.order_token}</strong></p>
+                                <p class="order-time">${new Date(order.created_at).toLocaleTimeString()}</p>
+                            </div>
+                            <div class="order-body">
+                                <ul class="order-items-list">${itemsHtml}</ul>
+                            </div>
+                            <div class="order-actions">
+                                <label for="status-select-${order.id}">Update Status:</label>
+                                <select id="status-select-${order.id}" onchange="updateOrderStatus(${order.id}, this.value)">
+                                    ${statusOptions}
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                }
+                ordersStmt.free();
+
+                if (!hasOrders) {
+                    ordersHtml = '<p class="not-found">No active orders right now. Great job!</p>';
+                }
+
+                container.innerHTML = ordersHtml;
+
+            } catch (error) {
+                console.error("Failed to load shop orders:", error);
+                container.innerHTML = '<p class="error">Could not load orders.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkDB = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkDB);
+
+                    protectRoute();
+                    const owner = getCurrentUser();
+                    if (owner && owner.role === 'owner') {
+                        loadShopOrders();
+                    }
+
+                    document.getElementById('logout-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        logoutUser();
+                    });
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

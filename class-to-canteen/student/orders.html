@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Class To Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile.css">
+</head>
+<body>
+    <header class="fixed-header">
+        <div class="header-content">
+            <a href="home.html" class="back-arrow">←</a>
+            <h1 class="logo">My Orders</h1>
+            <a href="cart.html" class="cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span id="cart-counter" class="cart-badge">0</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="scrollable-content" id="orders-page">
+        <div id="orders-container">
+            <!-- Order confirmation or history will be injected here -->
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <footer class="bottom-nav">
+        <a href="home.html" class="nav-item">Home</a>
+        <a href="cart.html" class="nav-item">Cart</a>
+        <a href="orders.html" class="nav-item active">Orders</a>
+        <a href="#" id="profile-logout" class="nav-item">Profile</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.6.2/dist/sql-wasm.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        function displayOrderConfirmation() {
+            const container = document.getElementById('orders-container');
+            const orderDetails = JSON.parse(sessionStorage.getItem('lastOrder'));
+
+            if (!orderDetails) {
+                // If there's no confirmation, just show history.
+                loadOrderHistory();
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="order-confirmation">
+                    <h2>Order Placed Successfully!</h2>
+                    <p>Thank you for your order.</p>
+                    <div class="token-card">
+                        <p>Your Order Token:</p>
+                        <p class="order-token">${orderDetails.orderToken}</p>
+                        <p>Total Amount: $${orderDetails.total.toFixed(2)}</p>
+                    </div>
+                    <p>Show this token at the counter to pick up your order.</p>
+                    <a href="orders.html" class="button" onclick="clearConfirmation()">View All Orders</a>
+                </div>
+            `;
+            // Clear the flag so reloading shows history
+            sessionStorage.removeItem('lastOrder');
+        }
+
+        function clearConfirmation() {
+            // This function is to prevent showing confirmation again when clicking the button
+            const url = new URL(window.location);
+            url.searchParams.delete('confirmation');
+            window.history.replaceState({}, '', url);
+        }
+
+        function loadOrderHistory() {
+            const container = document.getElementById('orders-container');
+            if (!window.db) {
+                container.innerHTML = '<p class="error">Error loading order history.</p>';
+                return;
+            }
+            const user = getCurrentUser();
+            if (!user) return;
+
+            try {
+                const ordersStmt = db.prepare("SELECT o.id, o.order_token, o.total_amount, o.status, o.created_at, s.name as shop_name FROM orders o JOIN shops s ON o.shop_id = s.id WHERE o.user_id = ? ORDER BY o.created_at DESC");
+                ordersStmt.bind([user.id]);
+
+                let ordersHtml = '<h3>Your Order History</h3>';
+                let hasOrders = false;
+                while (ordersStmt.step()) {
+                    hasOrders = true;
+                    const order = ordersStmt.getAsObject();
+                    const orderDate = new Date(order.created_at).toLocaleString();
+
+                    let itemsHtml = '';
+                    const itemsStmt = db.prepare("SELECT p.name, oi.quantity FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+                    itemsStmt.bind([order.id]);
+                    while(itemsStmt.step()){
+                        const item = itemsStmt.getAsObject();
+                        itemsHtml += `<li>${item.quantity} x ${item.name}</li>`;
+                    }
+                    itemsStmt.free();
+
+                    ordersHtml += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <p class="order-shop">${order.shop_name}</p>
+                                    <p class="order-id">Token: ${order.order_token}</p>
+                                </div>
+                                <div class="order-status ${order.status.toLowerCase()}">${order.status}</div>
+                            </div>
+                            <div class="order-body">
+                                <p><strong>Items:</strong></p>
+                                <ul class="order-items-list">${itemsHtml}</ul>
+                            </div>
+                            <div class="order-footer">
+                                <p class="order-date">${orderDate}</p>
+                                <p class="order-total">Total: $${order.total_amount.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                ordersStmt.free();
+
+                if (!hasOrders) {
+                    ordersHtml = '<p class="not-found">You have no past orders. Time to make one!</p>';
+                }
+
+                container.innerHTML = ordersHtml;
+
+            } catch (error) {
+                console.error("Failed to load order history:", error);
+                container.innerHTML = '<p class="error">Could not load order history.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkDB = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkDB);
+
+                    protectRoute();
+                    updateCartCounter();
+
+                    const params = new URLSearchParams(window.location.search);
+                    if (params.get('confirmation') === 'true') {
+                        displayOrderConfirmation();
+                    } else {
+                        loadOrderHistory();
+                    }
+
+                    document.getElementById('profile-logout').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        logoutUser();
+                    });
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
