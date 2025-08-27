@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "name": "Veggie Burger",
+    "price": 5.50,
+    "description": "A delicious veggie patty on a whole wheat bun.",
+    "image_url": "/images/veggie-burger.jpg",
+    "category_id": 1,
+    "shop_id": 1
+  },
+  {
+    "id": 2,
+    "name": "Pasta Primavera",
+    "price": 8.00,
+    "description": "Fresh pasta with seasonal vegetables in a light cream sauce.",
+    "image_url": "/images/pasta.jpg",
+    "category_id": 1,
+    "shop_id": 1
+  },
+  {
+    "id": 3,
+    "name": "Chicken Caesar Salad",
+    "price": 7.25,
+    "description": "Grilled chicken, romaine lettuce, croutons, and Caesar dressing.",
+    "image_url": "/images/salad.jpg",
+    "category_id": 4,
+    "shop_id": 1
+  },
+  {
+    "id": 4,
+    "name": "Vegetable Stir Fry",
+    "price": 6.75,
+    "description": "A mix of fresh vegetables stir-fried in a savory sauce.",
+    "image_url": "/images/stir-fry.jpg",
+    "category_id": 1,
+    "shop_id": 2
+  },
+  {
+    "id": 5,
+    "name": "Grilled Salmon",
+    "price": 9.50,
+    "description": "Perfectly grilled salmon fillet with a side of steamed asparagus.",
+    "image_url": "/images/salmon.jpg",
+    "category_id": 4,
+    "shop_id": 2
+  },
+  {
+    "id": 6,
+    "name": "Chicken Sandwich",
+    "price": 6.00,
+    "description": "Classic chicken sandwich with lettuce, tomato, and mayo.",
+    "image_url": "/images/sandwich.jpg",
+    "category_id": 3,
+    "shop_id": 2
+  },
+  {
+    "id": 7,
+    "name": "Espresso",
+    "price": 2.50,
+    "description": "A strong shot of coffee.",
+    "image_url": "/images/espresso.jpg",
+    "category_id": 2,
+    "shop_id": 3
+  },
+  {
+    "id": 8,
+    "name": "Iced Coffee",
+    "price": 3.50,
+    "description": "Chilled coffee served over ice.",
+    "image_url": "/images/iced-coffee.jpg",
+    "category_id": 2,
+    "shop_id": 3
+  },
+  {
+    "id": 9,
+    "name": "Chocolate Cake",
+    "price": 4.00,
+    "description": "A rich and decadent slice of chocolate cake.",
+    "image_url": "/images/cake.jpg",
+    "category_id": 5,
+    "shop_id": 3
+  }
+]

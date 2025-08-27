@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Edit Product</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700" />
+    <style>
+        .content-container { opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .content-container.loaded { opacity: 1; }
+        .press-effect { transition: transform 0.1s ease-out; }
+        .press-effect:active { transform: scale(0.97); }
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-[#fcfbf8]">
+    <div class="mx-auto max-w-sm">
+        <div class="relative min-h-screen flex flex-col justify-between">
+            <div class="content-container">
+                <div class="flex items-center bg-[#fcfbf8] p-4 pb-2 justify-between">
+                    <a href="./shop_products.html" class="text-[#1c1a0d] flex size-12 shrink-0 items-center -ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+                    </a>
+                    <h2 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Edit Product</h2>
+                </div>
+                
+                <form id="edit-product-form" class="p-4 flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label for="name" class="text-sm font-medium text-[#1c1a0d] mb-1">Product Name</label>
+                        <input id="name" name="name" type="text" required class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="description" class="text-sm font-medium text-[#1c1a0d] mb-1">Description</label>
+                        <textarea id="description" name="description" rows="3" class="form-textarea rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]"></textarea>
+                    </div>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="price" class="text-sm font-medium text-[#1c1a0d] mb-1">Price</label>
+                            <input id="price" name="price" type="number" step="0.01" required class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="category_id" class="text-sm font-medium text-[#1c1a0d] mb-1">Category</label>
+                            <select id="category_id" name="category_id" required class="form-select h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]"></select>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="image_url" class="text-sm font-medium text-[#1c1a0d] mb-1">Image URL</label>
+                        <input id="image_url" name="image_url" type="text" placeholder="/images/your-image.jpg" class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                    </div>
+                    <div id="form-error" class="text-red-500 text-sm h-4"></div>
+                </form>
+            </div>
+
+            <div class="p-4 flex flex-col gap-3">
+                 <button type="submit" form="edit-product-form" class="press-effect flex w-full h-12 items-center justify-center rounded-lg bg-[#f3dd39] text-[#1c1a0d] font-bold">
+                    Save Changes
+                </button>
+                <button id="delete-btn" type="button" class="press-effect flex w-full h-12 items-center justify-center rounded-lg bg-red-100 text-red-700 font-bold">
+                    Delete Product
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="shop_logic.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = parseInt(urlParams.get('id'));
+        const form = document.getElementById('edit-product-form');
+        const errorDiv = document.getElementById('form-error');
+
+        async function loadCategoriesAndProduct() {
+            const select = document.getElementById('category_id');
+            if (!productId) {
+                document.body.innerHTML = '<p class="text-red-500 p-4">No product ID provided.</p>';
+                return;
+            }
+
+            try {
+                // Fetch categories and product data in parallel
+                const [catResponse, prodResponse] = await Promise.all([
+                    fetch('/categories'),
+                    fetch(`/products/${productId}`)
+                ]);
+
+                if (!catResponse.ok || !prodResponse.ok) {
+                    throw new Error('Failed to load initial data.');
+                }
+
+                const categories = await catResponse.json();
+                const product = await prodResponse.json();
+                
+                // Populate categories dropdown
+                select.innerHTML = '';
+                categories.forEach(cat => {
+                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+
+                // Populate form with product data
+                form.elements.name.value = product.name;
+                form.elements.description.value = product.description || '';
+                form.elements.price.value = product.price;
+                form.elements.category_id.value = product.category_id;
+                form.elements.image_url.value = product.image_url || '';
+
+            } catch (error) {
+                console.error("Failed to load data:", error);
+                errorDiv.textContent = 'Could not load product data.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.content-container').classList.add('loaded');
+            loadCategoriesAndProduct();
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                errorDiv.textContent = '';
+
+                const formData = new FormData(form);
+                const productData = {
+                    name: formData.get('name'),
+                    price: parseFloat(formData.get('price')),
+                    description: formData.get('description'),
+                    image_url: formData.get('image_url') || '/images/default-food.jpg',
+                    category_id: parseInt(formData.get('category_id')),
+                };
+
+                try {
+                    const response = await fetch(`/products/${productId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || 'Failed to update product');
+                    }
+                    alert('Product updated successfully!');
+                    window.location.href = './shop_products.html';
+                } catch (error) {
+                    console.error("Update error:", error);
+                    errorDiv.textContent = error.message;
+                }
+            });
+
+            // Note: A delete endpoint is not yet implemented in the backend.
+            // This button is for UI purposes for now.
+            document.getElementById('delete-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+                     alert('Delete functionality to be implemented.');
+                    // Example of how delete would work:
+                    /*
+                    fetch(`/products/${productId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Could not delete product.');
+                            alert('Product deleted.');
+                            window.location.href = './shop_products.html';
+                        })
+                        .catch(err => alert(err.message));
+                    */
+                }
+            });
+        });
+    </script>
+</body>
+</html>

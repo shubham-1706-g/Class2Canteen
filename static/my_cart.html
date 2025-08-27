@@ -1,0 +1,360 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700" />
+  <title>My Cart</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    .content-container {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .content-container.loaded {
+      opacity: 1;
+    }
+
+    .press-effect {
+      transition: transform 0.1s ease-out;
+    }
+
+    .press-effect:active {
+      transform: scale(0.97);
+    }
+
+    .time-slot-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+    }
+
+    .time-slot-container.open {
+      max-height: 500px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div class="mx-auto max-w-sm">
+    <div class="relative bg-[#fcfbf8] min-h-screen">
+      <!-- Main content area -->
+      <div class="pb-24">
+        <div class="content-container">
+          <div class="flex items-center bg-[#fcfbf8] p-4 pb-2 justify-between">
+            <a href="./all_products.html" class="text-[#1c1a0d] flex size-12 shrink-0 items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor"
+                viewBox="0 0 256 256">
+                <path
+                  d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z">
+                </path>
+              </svg>
+            </a>
+            <h2 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">My
+              Cart</h2>
+          </div>
+
+          <div id="cart-items-container" class="p-4 flex flex-col gap-3">
+            <!-- Cart items will be dynamically inserted here -->
+          </div>
+
+          <!-- Break Time Selection -->
+          <div id="order-details" class="hidden">
+            <h3 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-4">Select Pickup
+              Time</h3>
+            <div class="px-4 flex gap-2">
+              <button
+                class="break-button flex-1 h-10 rounded-lg bg-[#f3f2e7] text-[#1c1a0d] text-sm font-medium press-effect"
+                data-start="9:00" data-end="9:30">9:00 - 9:30</button>
+              <button
+                class="break-button flex-1 h-10 rounded-lg bg-[#f3f2e7] text-[#1c1a0d] text-sm font-medium press-effect"
+                data-start="11:30" data-end="12:00">11:30 - 12:00</button>
+              <button
+                class="break-button flex-1 h-10 rounded-lg bg-[#f3f2e7] text-[#1c1a0d] text-sm font-medium press-effect"
+                data-start="14:00" data-end="14:30">2:00 - 2:30</button>
+            </div>
+
+            <!-- Time Slot Selection -->
+            <div id="time-slot-container" class="time-slot-container px-4 pt-3">
+              <div id="time-slots" class="grid grid-cols-4 gap-2"></div>
+            </div>
+
+            <h3 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-6">Order Summary
+            </h3>
+            <div class="p-4">
+              <div class="bg-[#f3f2e7] p-3 rounded-lg border border-[#e5e2d0]">
+                <div class="flex justify-between gap-x-6 py-2">
+                  <p class="text-[#9b924b] text-sm font-normal leading-normal">Subtotal</p>
+                  <p id="subtotal" class="text-[#1c1a0d] text-sm font-normal leading-normal text-right">$0.00</p>
+                </div>
+                <div class="flex justify-between gap-x-6 py-2">
+                  <p class="text-[#9b924b] text-sm font-normal leading-normal">Tax (10%)</p>
+                  <p id="tax" class="text-[#1c1a0d] text-sm font-normal leading-normal text-right">$0.00</p>
+                </div>
+                <div class="flex justify-between gap-x-6 py-2 border-t border-[#e5e2d0] mt-2 pt-2">
+                  <p class="text-[#1c1a0d] text-base font-medium leading-normal">Total</p>
+                  <p id="total" class="text-[#1c1a0d] text-base font-bold leading-normal text-right">$0.00</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex px-4 py-3">
+              <button id="checkout-btn"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 flex-1 bg-[#f3dd39] text-[#1c1a0d] text-base font-bold leading-normal tracking-[0.015em] press-effect" disabled>
+                <span id="checkout-btn-text" class="truncate">Select a Pickup Time</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fixed 5-icon navigation bar -->
+      <div class="fixed bottom-0 z-10 w-full max-w-sm">
+        <div class="flex justify-around border-t border-[#f3f2e7] bg-[#fcfbf8] px-2 pb-3 pt-2">
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./home.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./all_products.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">List</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#1c1a0d]" href="./my_cart.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM180,192a12,12,0,1,1-12,12A12,12,0,0,1,180,192Zm-96,0a12,12,0,1,1-12,12A12,12,0,0,1,84,192Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Cart</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./orders.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="w-6 h-6" fill="currentColor">
+                <path
+                  d="M256 144C256 108.7 284.7 80 320 80C355.3 80 384 108.7 384 144L384 192L256 192L256 144zM208 192L144 192C117.5 192 96 213.5 96 240L96 448C96 501 139 544 192 544L448 544C501 544 544 501 544 448L544 240C544 213.5 522.5 192 496 192L432 192L432 144C432 82.1 381.9 32 320 32C258.1 32 208 82.1 208 144L208 192zM232 240C245.3 240 256 250.7 256 264C256 277.3 245.3 288 232 288C218.7 288 208 277.3 208 264C208 250.7 218.7 240 232 240zM384 264C384 250.7 394.7 240 408 240C421.3 240 432 250.7 432 264C432 277.3 421.3 288 408 288C394.7 288 384 277.3 384 264z" />
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Orders</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./profile.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const user = JSON.parse(localStorage.getItem('canteenUser'));
+    if (!user) {
+      window.location.href = './login.html';
+    }
+
+    let selectedTimeSlot = null;
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('canteenCart')) || [];
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('canteenCart', JSON.stringify(cart));
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const cartContainer = document.getElementById('cart-items-container');
+      const orderDetails = document.getElementById('order-details');
+      cartContainer.innerHTML = '';
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = '<p class="text-center text-gray-500 py-8">Your cart is empty.</p>';
+        orderDetails.style.display = 'none';
+        return;
+      }
+
+      orderDetails.style.display = 'block';
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        const itemTotalPrice = item.price * item.quantity;
+        subtotal += itemTotalPrice;
+        cartContainer.innerHTML += `
+                <div class="flex items-center gap-4 bg-[#f3f2e7] p-3 rounded-lg border border-[#e5e2d0] justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-14" style='background-image: url("${item.image_url}");'></div>
+                    <div class="flex flex-col justify-center">
+                      <p class="text-[#1c1a0d] text-base font-medium leading-normal line-clamp-1">${item.name}</p>
+                      <p class="text-[#9b924b] text-sm font-normal leading-normal line-clamp-2">Quantity: ${item.quantity}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <p class="text-[#1c1a0d] text-base font-normal leading-normal">$${itemTotalPrice.toFixed(2)}</p>
+                    <button onclick="removeFromCart(${item.id})" class="press-effect size-8 rounded-full bg-white border border-[#e5e2d0] flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                    </button>
+                  </div>
+                </div>
+            `;
+      });
+
+      const tax = subtotal * 0.10;
+      const total = subtotal + tax;
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function removeFromCart(productId) {
+      let cart = getCart();
+      cart = cart.filter(item => item.id !== productId);
+      saveCart(cart);
+      renderCart();
+    }
+    
+    function checkCanCheckout() {
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const checkoutBtnText = document.getElementById('checkout-btn-text');
+        if (selectedTimeSlot) {
+            checkoutBtn.disabled = false;
+            checkoutBtnText.textContent = 'Proceed to Checkout';
+        } else {
+            checkoutBtn.disabled = true;
+            checkoutBtnText.textContent = 'Select a Pickup Time';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const content = document.querySelector('.content-container');
+      const breakButtons = document.querySelectorAll('.break-button');
+      const timeSlotContainer = document.getElementById('time-slot-container');
+      const timeSlotsDiv = document.getElementById('time-slots');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      renderCart(); // Initial render
+
+      function generateTimeSlots(startTime, endTime) {
+        timeSlotsDiv.innerHTML = '';
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+        let currentTime = new Date();
+        currentTime.setHours(startHour, startMinute, 0, 0);
+        let endTimeObj = new Date();
+        endTimeObj.setHours(endHour, endMinute, 0, 0);
+
+        while (currentTime <= endTimeObj) {
+          const hours = currentTime.getHours();
+          const minutes = currentTime.getMinutes();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+          const displayMinutes = minutes.toString().padStart(2, '0');
+          const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
+          const button = document.createElement('button');
+          button.className = 'time-slot-button h-10 rounded-lg bg-[#f3f2e7] text-[#1c1a0d] text-xs font-medium press-effect';
+          button.textContent = timeString;
+          timeSlotsDiv.appendChild(button);
+          currentTime.setMinutes(currentTime.getMinutes() + 5);
+        }
+
+        document.querySelectorAll('.time-slot-button').forEach(button => {
+          button.addEventListener('click', function () {
+            document.querySelectorAll('.time-slot-button').forEach(btn => {
+              btn.classList.remove('bg-[#f3dd39]');
+              btn.classList.add('bg-[#f3f2e7]');
+            });
+            this.classList.add('bg-[#f3dd39]');
+            this.classList.remove('bg-[#f3f2e7]');
+            selectedTimeSlot = this.textContent;
+            checkCanCheckout();
+          });
+        });
+      }
+
+      breakButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          breakButtons.forEach(btn => {
+            btn.classList.remove('bg-[#f3dd39]');
+            btn.classList.add('bg-[#f3f2e7]');
+          });
+          this.classList.add('bg-[#f3dd39]');
+          this.classList.remove('bg-[#f3f2e7]');
+          const startTime = this.dataset.start;
+          const endTime = this.dataset.end;
+          generateTimeSlots(startTime, endTime);
+          timeSlotContainer.classList.add('open');
+          selectedTimeSlot = null; // Reset selection
+          checkCanCheckout();
+        });
+      });
+      
+      checkoutBtn.addEventListener('click', async function () {
+        const btnText = document.getElementById('checkout-btn-text');
+        const originalText = btnText.textContent;
+        const cart = getCart();
+
+        if (cart.length === 0) {
+          alert("Your cart is empty.");
+          return;
+        }
+        
+        // Assumption: All items in cart are from the same shop.
+        const shopId = cart[0].shop_id;
+
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = subtotal * 1.10; // Subtotal + 10% tax
+
+        const orderData = {
+          user_id: user.id,
+          shop_id: shopId,
+          total_price: total,
+          items: cart, // The cart items already have the required format
+        };
+        
+        btnText.textContent = "Processing...";
+        checkoutBtn.disabled = true;
+
+        try {
+          const response = await fetch('/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+          });
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'Failed to create order.');
+          }
+          alert('Order placed successfully!');
+          saveCart([]); // Clear the cart
+          window.location.href = './orders.html';
+        } catch (error) {
+          console.error('Checkout error:', error);
+          alert(error.message);
+          btnText.textContent = originalText;
+          checkoutBtn.disabled = false;
+        }
+      });
+
+
+      setTimeout(() => {
+        content.classList.add('loaded');
+      }, 100);
+    });
+  </script>
+</body>
+
+</html>

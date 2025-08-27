@@ -1,0 +1,300 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700" />
+  <title>All Products</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    .content-container {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .content-container.loaded {
+      opacity: 1;
+    }
+
+    .press-effect {
+      transition: transform 0.1s ease-out;
+    }
+
+    .press-effect:active {
+      transform: scale(0.97);
+    }
+
+    .add-to-cart-btn .add-icon,
+    .add-to-cart-btn.added .check-icon {
+      display: block;
+    }
+
+    .add-to-cart-btn .check-icon,
+    .add-to-cart-btn.added .add-icon {
+      display: none;
+    }
+
+    #toast {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s 0.5s, opacity 0.5s linear;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.5s linear;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .filter-btn {
+      transition: background-color 0.2s, color 0.2s;
+      border: 1px solid #e5e2d0;
+    }
+
+    .filter-btn.active {
+      background-color: #f3dd39;
+      color: #1c1a0d;
+      border-color: #f3dd39;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div class="container mx-auto max-w-sm">
+    <div class="relative bg-[#fcfbf8] min-h-screen">
+      <div class="pb-24">
+        <div class="content-container">
+          <div class="flex items-center bg-[#fcfbf8] p-4 pb-2 justify-between">
+            <a href="./home.html" class="text-[#1c1a0d] flex size-12 shrink-0 items-center"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z">
+                </path>
+              </svg></a>
+            <h2 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">All
+              Products</h2>
+          </div>
+          <div class="px-4 py-3">
+            <label class="flex flex-col min-w-40 h-12 w-full">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#9b924b] flex border-none bg-[#f3f2e7] items-center justify-center pl-4 rounded-l-lg border-r-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor"
+                    viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z">
+                    </path>
+                  </svg>
+                </div>
+                <input placeholder="Search for food"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1c1a0d] focus:outline-0 focus:ring-0 border-none bg-[#f3f2e7] focus:border-none h-full placeholder:text-[#9b924b] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  value="" />
+              </div>
+            </label>
+          </div>
+
+          <!-- Filters Section -->
+          <div class="px-4 pt-2">
+            <h3 class="text-sm font-bold text-[#1c1a0d] mb-2">Shops</h3>
+            <div id="shop-filters" class="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+              <!-- Shop filter buttons will be injected here -->
+            </div>
+            <h3 class="text-sm font-bold text-[#1c1a0d] mt-3 mb-2">Categories</h3>
+            <div id="category-filters" class="flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+              <!-- Category filter buttons will be injected here -->
+            </div>
+          </div>
+
+
+          <div id="product-grid" class="grid grid-cols-[repeat(auto-fill,minmax(158px,1fr))] gap-4 p-4"></div>
+        </div>
+      </div>
+      <!-- Navigation bar -->
+      <div class="fixed bottom-0 z-10 w-full max-w-sm">
+        <div class="flex justify-around border-t border-[#f3f2e7] bg-[#fcfbf8] px-2 pb-3 pt-2">
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./home.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#1c1a0d]" href="./all_products.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M56,128a16,16,0,1,1-16-16A16,16,0,0,1,56,128ZM40,48A16,16,0,1,0,56,64,16,16,0,0,0,40,48Zm0,128a16,16,0,1,0,16,16A16,16,0,0,0,40,176Zm176-64H88a8,8,0,0,0-8,8v16a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V120A8,8,0,0,0,216,112Zm0-64H88a8,8,0,0,0-8,8V72a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V56A8,8,0,0,0,216,48Zm0,128H88a8,8,0,0,0-8,8v16a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V184A8,8,0,0,0,216,176Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">List</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./my_cart.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Cart</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./orders.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640" class="w-6 h-6" fill="currentColor">
+                <path
+                  d="M256 144C256 108.7 284.7 80 320 80C355.3 80 384 108.7 384 144L384 192L256 192L256 144zM208 192L144 192C117.5 192 96 213.5 96 240L96 448C96 501 139 544 192 544L448 544C501 544 544 501 544 448L544 240C544 213.5 522.5 192 496 192L432 192L432 144C432 82.1 381.9 32 320 32C258.1 32 208 82.1 208 144L208 192zM232 240C245.3 240 256 250.7 256 264C256 277.3 245.3 288 232 288C218.7 288 208 277.3 208 264C208 250.7 218.7 240 232 240zM384 264C384 250.7 394.7 240 408 240C421.3 240 432 250.7 432 264C432 277.3 421.3 288 408 288C394.7 288 384 277.3 384 264z" />
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Orders</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./profile.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"
+    class="fixed bottom-24 left-1/2 -translate-x-1/2 flex items-center justify-center text-white w-80 h-9 rounded-full text-sm bg-[rgb(22,101,52)]">
+    Item added to cart!</div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('canteenUser'));
+    if (!user) window.location.href = './login.html';
+
+    const API_URL = '';
+    const productGrid = document.getElementById('product-grid');
+    const shopFiltersContainer = document.getElementById('shop-filters');
+    const categoryFiltersContainer = document.getElementById('category-filters');
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 2000);
+    }
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('canteenCart')) || [];
+    }
+
+    function addToCart(event, product) {
+      event.preventDefault(); event.stopPropagation();
+      let cart = getCart();
+      const existingProduct = cart.find(item => item.id === product.id);
+      if (existingProduct) { existingProduct.quantity += 1; }
+      else { cart.push({ ...product, quantity: 1 }); }
+      localStorage.setItem('canteenCart', JSON.stringify(cart));
+      const btn = event.currentTarget;
+      btn.classList.add('added');
+      btn.style.backgroundColor = '#4ade80';
+      showToast(`${product.name} added to cart`);
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.style.backgroundColor = '';
+      }, 1000);
+    }
+
+    function createProductCard(product) {
+      return `<div class="flex flex-col gap-3 bg-[#f3f2e7] p-3 rounded-lg border border-[#e5e2d0]">
+          <a href="./product.html?id=${product.id}" class="flex-grow">
+            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" style="background-image: url('${product.image_url}');"></div>
+            <div><p class="text-[#1c1a0d] text-base font-medium leading-normal">${product.name}</p></div>
+          </a>
+          <div class="flex justify-between items-center mt-1">
+            <p class="text-[#1c1a0d] text-sm font-bold leading-normal">$${product.price.toFixed(2)}</p>
+            <button onclick='addToCart(event, ${JSON.stringify(product)})' class="add-to-cart-btn press-effect size-8 rounded-full bg-gray-200 flex items-center justify-center text-lg text-gray-700 transition-colors">
+                <span class="add-icon">+</span><span class="check-icon">✓</span>
+            </button>
+          </div>
+        </div>`;
+    }
+
+    async function fetchAndDisplayProducts(url = `${API_URL}/products`) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const products = await response.json();
+        productGrid.innerHTML = ''; // Clear existing products
+        if (products.length > 0) {
+          products.forEach(product => {
+            productGrid.innerHTML += createProductCard(product);
+          });
+        } else {
+          productGrid.innerHTML = '<p class="text-gray-500 col-span-full text-center">No products found for this filter.</p>';
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        productGrid.innerHTML = '<p class="text-red-500 col-span-full">Could not load products.</p>';
+      }
+    }
+
+    function createFilterButtons(container, items, filterKey) {
+      // "All" button
+      let buttonsHTML = `<button class="filter-btn active text-sm font-medium px-4 py-2 rounded-full bg-[#f3dd39] text-[#1c1a0d] press-effect whitespace-nowrap" data-id="all">All</button>`;
+      items.forEach(item => {
+        buttonsHTML += `<button class="filter-btn text-sm font-medium px-4 py-2 rounded-full bg-white text-gray-700 press-effect whitespace-nowrap" data-id="${item.id}">${item.name}</button>`;
+      });
+      container.innerHTML = buttonsHTML;
+
+      // Add event listeners
+      container.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          // Update active state for this group
+          container.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'bg-[#f3dd39]', 'text-[#1c1a0d]'));
+          button.classList.add('active', 'bg-[#f3dd39]', 'text-[#1c1a0d]');
+
+          const filterId = button.dataset.id;
+          let url = `${API_URL}/products`;
+          if (filterId !== 'all') {
+            url += `?${filterKey}=${filterId}`;
+          }
+          fetchAndDisplayProducts(url);
+        });
+      });
+    }
+
+    async function loadFilters() {
+      try {
+        const [shopsRes, categoriesRes] = await Promise.all([
+          fetch(`${API_URL}/shops`),
+          fetch(`${API_URL}/categories`)
+        ]);
+        const shops = await shopsRes.json();
+        const categories = await categoriesRes.json();
+
+        createFilterButtons(shopFiltersContainer, shops, 'shop_id');
+        createFilterButtons(categoryFiltersContainer, categories, 'category_id');
+      } catch (error) {
+        console.error('Error loading filters:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      loadFilters();
+      fetchAndDisplayProducts(); // Initial load of all products
+      document.querySelector('.content-container').classList.add('loaded');
+    });
+  </script>
+</body>
+
+</html>

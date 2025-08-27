@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Profile & Settings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+        href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700" />
+    <style>
+        .content-container { opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .content-container.loaded { opacity: 1; }
+        .press-effect { transition: transform 0.1s ease-out; }
+        .press-effect:active { transform: scale(0.97); }
+        .edit-form { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out, margin 0.5s ease-out; }
+        .edit-form.open { max-height: 500px; margin-top: 0.5rem; }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="mx-auto max-w-sm">
+        <div class="relative bg-[#fcfbf8] min-h-screen">
+            <div class="pb-24">
+                <div class="content-container">
+                    <div class="flex items-center bg-[#fcfbf8] p-4 pb-2 justify-center">
+                        <h2 class="text-[#1c1a0d] text-lg font-bold leading-tight tracking-[-0.015em]">Profile &
+                            Settings</h2>
+                    </div>
+
+                    <div class="flex p-4 flex-col gap-4 items-center">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-24"
+                            id="profile-picture"
+                            style='background-image: url("https://placehold.co/128x128/f3f2e7/1c1a0d?text=S");'></div>
+                        <div class="flex flex-col items-center justify-center">
+                            <p id="profile-name" class="text-[#1c1a0d] text-xl font-bold"></p>
+                            <p id="shop-name" class="text-[#9b924b] text-base font-normal"></p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-[#1c1a0d] text-base font-bold px-4 pb-2 pt-2">Account</h3>
+                    <div class="px-4 flex flex-col gap-2">
+                        <div id="edit-profile-btn"
+                            class="flex items-center gap-4 bg-white p-3 rounded-lg border border-[#e5e2d0] min-h-14 justify-between press-effect shadow-sm cursor-pointer">
+                            <p class="text-[#1c1a0d] text-base font-normal flex-1 truncate">Edit Profile</p>
+                            <div class="shrink-0 text-[#1c1a0d]"><svg xmlns="http://www.w3.org/2000/svg" width="20px"
+                                    height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path
+                                        d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z">
+                                    </path>
+                                </svg></div>
+                        </div>
+
+                        <!-- Edit Profile Form -->
+                        <div id="edit-profile-form" class="edit-form">
+                            <form id="save-form"
+                                class="p-4 flex flex-col gap-4 bg-white rounded-lg border border-[#e5e2d0]">
+                                <div class="flex flex-col gap-1">
+                                    <label for="first_name" class="text-sm font-medium text-[#1c1a0d] mb-1">First
+                                        Name</label>
+                                    <input id="first_name" name="first_name" type="text"
+                                        class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label for="last_name" class="text-sm font-medium text-[#1c1a0d] mb-1">Last
+                                        Name</label>
+                                    <input id="last_name" name="last_name" type="text"
+                                        class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                                </div>
+                                <div id="update-error" class="text-red-500 text-sm h-4"></div>
+                                <div class="flex gap-3 mt-2">
+                                    <button type="button" id="cancel-edit-btn"
+                                        class="flex-1 h-12 rounded-lg bg-white text-[#1c1a0d] border border-[#e5e2d0] font-semibold press-effect">Cancel</button>
+                                    <button type="submit"
+                                        class="flex-1 h-12 rounded-lg bg-[#f3dd39] text-[#1c1a0d] font-bold press-effect">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <h3 class="text-[#1c1a0d] text-base font-bold px-4 pb-2 pt-4">Settings</h3>
+                    <div class="px-4 flex flex-col gap-2">
+                        <div id="edit-shop-btn"
+                            class="flex items-center gap-4 bg-white p-3 rounded-lg border border-[#e5e2d0] min-h-14 justify-between press-effect shadow-sm cursor-pointer">
+                            <p class="text-[#1c1a0d] text-base font-normal flex-1 truncate">Shop Settings</p>
+                            <div class="shrink-0 text-[#1c1a0d]"><svg xmlns="http://www.w3.org/2000/svg" width="20px"
+                                    height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path
+                                        d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z">
+                                    </path>
+                                </svg></div>
+                        </div>
+                        
+                        <div id="edit-shop-form" class="edit-form">
+                            <form id="save-shop-form"
+                                class="p-4 flex flex-col gap-4 bg-white rounded-lg border border-[#e5e2d0]">
+                                <div class="flex flex-col gap-1">
+                                    <label for="shop_name_field" class="text-sm font-medium text-[#1c1a0d] mb-1">Shop
+                                        Name</label>
+                                    <input id="shop_name_field" name="shop_name" type="text"
+                                        class="form-input h-12 rounded-lg bg-[#f3f2e7] border-none focus:ring-2 focus:ring-[#f3dd39] text-[#1c1a0d]">
+                                </div>
+                                <div id="update-shop-error" class="text-red-500 text-sm h-4"></div>
+                                <div class="flex gap-3 mt-2">
+                                    <button type="button" id="cancel-shop-btn"
+                                        class="flex-1 h-12 rounded-lg bg-white text-[#1c1a0d] border border-[#e5e2d0] font-semibold press-effect">Cancel</button>
+                                    <button type="submit"
+                                        class="flex-1 h-12 rounded-lg bg-[#f3dd39] text-[#1c1a0d] font-bold press-effect">Save</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="logout-btn"
+                            class="flex items-center gap-4 bg-white p-3 rounded-lg border border-[#e5e2d0] min-h-14 justify-between press-effect shadow-sm cursor-pointer mt-2">
+                            <p class="text-red-600 text-base font-normal flex-1 truncate">Logout</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Navigation Bar -->
+            <div class="fixed bottom-0 z-10 w-full max-w-sm">
+                <div class="flex justify-around border-t border-[#f3f2e7] bg-[#fcfbf8] px-2 pb-3 pt-2">
+                    <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]"
+                        href="./shop_dashboard.html">
+                        <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path
+                                    d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0l.11.11,80,75.48A16,16,0,0,1,224,115.55Z">
+                                </path>
+                            </svg></div>
+                        <p class="text-xs font-medium leading-normal tracking-[0.015em]">Dashboard</p>
+                    </a>
+                    <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]"
+                        href="./shop_orders.html">
+                        <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path
+                                    d="M72,104a8,8,0,0,1,8-8h96a8,8,0,0,1,0,16H80A8,8,0,0,1,72,104Zm8,40h96a8,8,0,0,0,0-16H80a8,8,0,0,0,0,16ZM232,56V208a8,8,0,0,1-11.58,7.15L192,200.94l-28.42,14.21a8,8,0,0,1-7.16,0L128,200.94,99.58,215.15a8,8,0,0,1-7.16,0L64,200.94,35.58,215.15A8,8,0,0,1,24,208V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Zm-16,0H40V195.06l20.42-10.22a8,8,0,0,1,7.16,0L96,199.06l28.42-14.22a8,8,0,0,1,7.16,0L160,199.06l28.42-14.22a8,8,0,0,1,7.16,0L216,195.06Z">
+                                </path>
+                            </svg></div>
+                        <p class="text-xs font-medium leading-normal tracking-[0.015em]">Orders</p>
+                    </a>
+                    <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]"
+                        href="./shop_products.html">
+                        <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path
+                                    d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z">
+                                </path>
+                            </svg></div>
+                        <p class="text-xs font-medium leading-normal tracking-[0.015em]">Products</p>
+                    </a>
+                    <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#1c1a0d]"
+                        href="./shop_settings.html">
+                        <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                                width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path
+                                    d="M230.93,220a8,8,0,0,1-6.93,4H32a8,8,0,0,1-6.92-12c15.23-26.33,38.7-45.21,66.09-54.16a72,72,0,1,1,73.66,0c27.39,8.95,50.86,27.83,66.09,54.16A8,8,0,0,1,230.93,220Z">
+                                </path>
+                            </svg></div>
+                        <p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="shop_logic.js"></script>
+    <script>
+        // Global variable to hold the list of all shops
+        let allShops = [];
+        
+        // Fetches all shops and populates the profile information
+        async function fetchShopsAndPopulateProfile(currentUser) {
+            try {
+                // Fetch the list of all shops from the API
+                const response = await fetch('/shops');
+                if (!response.ok) throw new Error('Could not fetch shops');
+                allShops = await response.json();
+                
+                // Now populate the profile with the correct shop name
+                populateProfileUI(currentUser);
+            } catch (error) {
+                console.error("Initialization error:", error);
+                document.getElementById('shop-name').textContent = "Shop name unavailable";
+            }
+        }
+
+        // Updates the UI with the latest user and shop data
+        function populateProfileUI(currentUser) {
+            const profileName = document.getElementById('profile-name');
+            const profilePic = document.getElementById('profile-picture');
+            const firstNameInput = document.getElementById('first_name');
+            const lastNameInput = document.getElementById('last_name');
+            const shopNameDisplay = document.getElementById('shop-name');
+            const shopNameInput = document.getElementById('shop_name_field');
+
+            // Populate user's personal info
+            const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim();
+            profileName.textContent = fullName || 'Shop Owner';
+            const initial = (currentUser.first_name || 'S').charAt(0).toUpperCase();
+            profilePic.style.backgroundImage = `url("https://placehold.co/128x128/f3f2e7/1c1a0d?text=${initial}")`;
+            firstNameInput.value = currentUser.first_name || '';
+            lastNameInput.value = currentUser.last_name || '';
+
+            // Populate shop info
+            if (currentUser.shop_id && allShops.length > 0) {
+                const currentShop = allShops.find(shop => shop.id === currentUser.shop_id);
+                const currentShopName = currentShop ? currentShop.name : 'Unknown Shop';
+                shopNameDisplay.textContent = currentShopName;
+                shopNameInput.value = currentShopName;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await fetchShopsAndPopulateProfile(user);
+            document.querySelector('.content-container').classList.add('loaded');
+
+            // --- Element Selectors ---
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            const editProfileForm = document.getElementById('edit-profile-form');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const saveProfileForm = document.getElementById('save-form');
+            const updateErrorDiv = document.getElementById('update-error');
+
+            const editShopBtn = document.getElementById('edit-shop-btn');
+            const editShopForm = document.getElementById('edit-shop-form');
+            const cancelShopBtn = document.getElementById('cancel-shop-btn');
+            const saveShopForm = document.getElementById('save-shop-form');
+            const updateShopErrorDiv = document.getElementById('update-shop-error');
+
+            // --- Profile Logic ---
+            editProfileBtn.addEventListener('click', () => editProfileForm.classList.toggle('open'));
+            cancelEditBtn.addEventListener('click', () => editProfileForm.classList.remove('open'));
+
+            saveProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                updateErrorDiv.textContent = '';
+                const updatedData = {
+                    first_name: saveProfileForm.elements.first_name.value,
+                    last_name: saveProfileForm.elements.last_name.value
+                };
+                try {
+                    const response = await fetch(`/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedData)
+                    });
+                    if (!response.ok) {
+                         const err = await response.json(); throw new Error(err.detail || "Update failed.");
+                    }
+                    const updatedUser = await response.json();
+                    localStorage.setItem('canteenUser', JSON.stringify(updatedUser));
+                    Object.assign(user, updatedUser);
+                    populateProfileUI(user);
+                    editProfileForm.classList.remove('open');
+                } catch (error) {
+                    updateErrorDiv.textContent = error.message;
+                }
+            });
+            
+            // --- Shop Settings Logic ---
+            editShopBtn.addEventListener('click', () => editShopForm.classList.toggle('open'));
+            cancelShopBtn.addEventListener('click', () => editShopForm.classList.remove('open'));
+
+            saveShopForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                updateShopErrorDiv.textContent = '';
+                const newShopName = saveShopForm.elements.shop_name.value;
+                if (!newShopName.trim()) {
+                    updateShopErrorDiv.textContent = "Shop name cannot be empty.";
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/shops/${user.shop_id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newShopName })
+                    });
+                    if (!response.ok) {
+                        const err = await response.json(); throw new Error(err.detail || "Update failed.");
+                    }
+                    // Refresh all shop data and then update the UI
+                    await fetchShopsAndPopulateProfile(user); 
+                    editShopForm.classList.remove('open');
+                } catch(error) {
+                    updateShopErrorDiv.textContent = error.message;
+                }
+            });
+
+            // --- Logout Logic ---
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('canteenUser');
+                localStorage.removeItem('canteenCart');
+                window.location.href = './login.html';
+            });
+        });
+    </script>
+</body>
+
+</html>

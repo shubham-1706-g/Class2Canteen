@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Canteen Home</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700" />
+  <style>
+    .content-container {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .content-container.loaded {
+      opacity: 1;
+    }
+
+    .press-effect {
+      transition: transform 0.1s ease-out;
+    }
+
+    .press-effect:active {
+      transform: scale(0.97);
+    }
+
+    .add-to-cart-btn .add-icon,
+    .add-to-cart-btn.added .check-icon {
+      display: block;
+    }
+
+    .add-to-cart-btn .check-icon,
+    .add-to-cart-btn.added .add-icon {
+      display: none;
+    }
+
+    #toast {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s 0.5s, opacity 0.5s linear;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.5s linear;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100">
+  <div class="container mx-auto max-w-sm">
+    <div class="relative bg-[#fcfbf8] min-h-screen">
+      <div class="pb-24">
+        <div class="content-container">
+          <div class="p-6">
+            <div class="mb-6">
+              <h1 id="welcome-message" class="text-3xl font-bold text-[#1c1a0d]">Hi,</h1>
+              <p class="text-3xl font-light text-gray-600">Welcome back!</p>
+            </div>
+            <div class="relative mb-6">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-12">
+                <div
+                  class="text-[#9b924b] flex border-none bg-[#f3f2e7] items-center justify-center pl-4 rounded-l-lg border-r-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor"
+                    viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z">
+                    </path>
+                  </svg>
+                </div>
+                <input placeholder="Search for food"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1c1a0d] focus:outline-0 focus:ring-0 border-none bg-[#f3f2e7] focus:border-none h-full placeholder:text-[#9b924b] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  value="" />
+              </div>
+            </div>
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-[#1c1a0d]">Popular Food</h2>
+                <a class="text-[#9b924b] text-sm" href="./all_products.html">See all</a>
+              </div>
+              <div id="popular-food-grid" class="grid grid-cols-2 gap-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fixed 5-icon navigation bar -->
+      <div class="fixed bottom-0 z-10 w-full max-w-sm">
+        <div class="flex justify-around border-t border-[#f3f2e7] bg-[#fcfbf8] px-2 pb-3 pt-2">
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#1c1a0d]" href="./home.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0l.11.11,80,75.48A16,16,0,0,1,224,115.55Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./all_products.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">List</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./my_cart.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Cart</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./orders.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 640 640" class="w-6 h-6" fill="currentColor">
+                <path
+                  d="M256 144C256 108.7 284.7 80 320 80C355.3 80 384 108.7 384 144L384 192L256 192L256 144zM208 192L144 192C117.5 192 96 213.5 96 240L96 448C96 501 139 544 192 544L448 544C501 544 544 501 544 448L544 240C544 213.5 522.5 192 496 192L432 192L432 144C432 82.1 381.9 32 320 32C258.1 32 208 82.1 208 144L208 192zM232 240C245.3 240 256 250.7 256 264C256 277.3 245.3 288 232 288C218.7 288 208 277.3 208 264C208 250.7 218.7 240 232 240zM384 264C384 250.7 394.7 240 408 240C421.3 240 432 250.7 432 264C432 277.3 421.3 288 408 288C394.7 288 384 277.3 384 264z" />
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Orders</p>
+          </a>
+          <a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9b924b]" href="./profile.html">
+            <div class="flex h-8 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24px"
+                height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z">
+                </path>
+              </svg></div>
+            <p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 
+            bg-gray-800 text-white 
+            w-80 px-5 py-2.5 
+            rounded-full text-xs text-center">
+    Item added to cart!
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('canteenUser'));
+    if (!user) {
+      window.location.href = './login.html';
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('canteenCart')) || [];
+    }
+
+    function addToCart(event, product) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      let cart = getCart();
+      const existingProduct = cart.find(item => item.id === product.id);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      localStorage.setItem('canteenCart', JSON.stringify(cart));
+
+      const btn = event.currentTarget;
+      btn.classList.add('added');
+      btn.style.backgroundColor = '#4ade80';
+      showToast(`${product.name} added to cart`);
+      setTimeout(() => {
+        btn.classList.remove('added');
+        btn.style.backgroundColor = '';
+      }, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const content = document.querySelector('.content-container');
+      const popularFoodGrid = document.getElementById('popular-food-grid');
+      const welcomeMessage = document.getElementById('welcome-message');
+      const API_URL = '';
+
+      welcomeMessage.textContent = `Hi ${user.first_name || 'User'},`;
+
+      function createFoodCard(product) {
+        return `
+          <div class="bg-[#f3f2e7] p-3 rounded-lg border border-[#e5e2d0] flex flex-col">
+              <a href="./product.html?id=${product.id}" class="flex-grow">
+                <img alt="${product.name}" class="w-full h-32 object-cover rounded-lg mb-2" src="${product.image_url}" />
+                <h3 class="font-semibold text-[#1c1a0d]">${product.name}</h3>
+              </a>
+              <div class="flex justify-between items-center mt-2">
+                <p class="font-semibold text-[#1c1a0d]">$${product.price.toFixed(2)}</p>
+                <button onclick='addToCart(event, ${JSON.stringify(product)})' class="add-to-cart-btn press-effect size-8 rounded-full bg-gray-200 flex items-center justify-center text-lg text-gray-700 transition-colors">
+                    <span class="add-icon">+</span>
+                    <span class="check-icon">✓</span>
+                </button>
+              </div>
+          </div>
+        `;
+      }
+
+      fetch(`${API_URL}/products`)
+        .then(response => response.json())
+        .then(products => {
+          popularFoodGrid.innerHTML = '';
+          products.slice(0, 4).forEach(product => {
+            popularFoodGrid.innerHTML += createFoodCard(product);
+          });
+          setTimeout(() => content.classList.add('loaded'), 100);
+        })
+        .catch(error => {
+          console.error('Error fetching popular food:', error);
+          popularFoodGrid.innerHTML = '<p class="text-red-500 col-span-2">Could not load popular food items.</p>';
+          setTimeout(() => content.classList.add('loaded'), 100);
+        });
+    });
+  </script>
+</body>
+
+</html>
